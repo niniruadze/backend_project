@@ -14,9 +14,10 @@ module.exports = {
 
   getById: async (req, res) => {
     try {
-      const item = blogModel.findById(req.params.id);
+      const item = await blogModel.findById(req.params.id);
       res.json(item);
     } catch (err) {
+      console.log(err)
       res.status(500).json(err);
     }
   },
