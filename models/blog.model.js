@@ -27,6 +27,10 @@ const blogSchema = new mongoose.Schema(
       type: [commentSchema],
     },
 
+    images: {
+      type: [String],
+    },
+
     likeCount: {
       type: Number,
       default: 0,
@@ -50,4 +54,4 @@ const blogSchema = new mongoose.Schema(
 
 const blogModel = mongoose.model("Blog", blogSchema);
 
-module.exports = blogModel
+module.exports = blogModel;

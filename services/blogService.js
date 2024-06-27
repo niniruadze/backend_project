@@ -1,15 +1,32 @@
 const blogModel = require("../models/blog.model");
 
 module.exports = {
-  getAll: (req, res) => {
-    blogModel
-      .find({})
-      .then((data) => {
-        res.json(data);
-      })
-      .catch((err) => {
-        res.status(500).json(err);
+  getAll: async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const search = req.query.search || '';
+
+      const skip = (page - 1) * limit;
+      const query = {
+        $or: [
+          { title: { $regex: search, $options: 'i' } },
+          { content: { $regex: search, $options: 'i' } }
+        ]
+      };
+
+      const total = await blogModel.countDocuments(query);
+      const data = await blogModel.find(query).skip(skip).limit(limit);
+
+      res.json({
+        total,
+        page,
+        pages: Math.ceil(total / limit),
+        data
       });
+    } catch (err) {
+      res.status(500).json(err);
+    }
   },
 
   getById: async (req, res) => {
@@ -49,6 +66,7 @@ module.exports = {
           new: true,
         }
       );
+      res.json(item);
     } catch (error) {
       res.status(500).json(error);
     }
